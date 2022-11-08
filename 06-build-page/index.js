@@ -8,17 +8,6 @@ const assetsPath = path.join(__dirname, '/assets');
 const newAssetsPath = path.join(distPath, '/assets');
 
 
-// fs.readdir(distPath,{withFileTypes: true}, (err, files) => {
-//     if(files) {
-//         files.forEach(file => {
-//             if(file.isDirectory())
-//                 fs.rmdir(path.join(distPath, `/${file.name}`), err =>{});
-//             else
-//                 fs.unlink(`${distPath}/${file.name}`, err =>{})
-//         })
-//     }
-// })
-
 let del = fs.rmdir(distPath, err => {});
 
 let delDir = async() => {
