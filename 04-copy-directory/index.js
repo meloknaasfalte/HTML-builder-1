@@ -1,21 +1,35 @@
 const fs = require('fs');
-const fsPromises = fs.promises;
+const {readdir, copyFile, mkdir} = fs.promises;
 const path = require('path');
-const destPath = path.join(__dirname, '/files-copy');
+const distPath = path.join(__dirname, '/files-copy');
 const srcPath = path.join(__dirname, '/files');
 
-fs.readdir(destPath,{withFileTypes: true}, (err, files) => {
+fs.readdir(distPath,{withFileTypes: true}, (err, files) => {
     if(files) {
         files.forEach(file => {
-            fs.unlink(`${destPath}/${file.name}`, err =>{})
+            if(file.isDirectory())
+                fs.rmdir(path.join(distPath, `/${file.name}`), err =>{});
+            else
+                fs.unlink(`${distPath}/${file.name}`, err =>{})
         })
     }
 })
 
-fsPromises.mkdir(destPath,{recursive: true})
+fs.mkdir(distPath,{withFileTypes: true}, (err) => {});
 
-fs.readdir(srcPath, {withFileTypes: true}, (err, files) => {
-    files.forEach(file => {  
-        fsPromises.copyFile(`${srcPath}/${file.name}`, `${destPath}/${file.name}`);
-    })
-})
+let copyDir = async (srcPath, distPath) => {
+
+    for (let item of await readdir(srcPath, { withFileTypes: true })) {
+
+        if (item.isDirectory()) {
+            let newSrcPath = path.join(srcPath, `/${item.name}`)
+            let newDistPath = path.join(distPath, `/${item.name}`);
+            mkdir(newDistPath, { recursive: true });
+            copyDir(newSrcPath, newDistPath)
+        }
+        else {
+            copyFile(path.join(srcPath, `/${item.name}`), path.join(distPath, `/${item.name}`));
+        }
+    }
+}
+copyDir(srcPath, distPath);
