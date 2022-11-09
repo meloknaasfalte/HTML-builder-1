@@ -3,7 +3,7 @@ const path = require('path');
 const writeStream = fs.createWriteStream(path.join(__dirname, 'text.txt'));
 const {stdin, stdout} = require('process');
 
-stdin.write('Enter some text:\n');
+stdout.write('Enter some text:\n');
 stdin.resume();
 
 process.stdin.on('data', chunk => {
